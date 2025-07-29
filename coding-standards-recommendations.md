@@ -1,6 +1,6 @@
 # Python Coding Standards (Recommendations)
 
-> These recommendations are intended to make our shared Python code **readable, maintainable, and bug‑resistant**, helping us deliver faster with fewer surprises. They are based on Clean Code principles and [PEP 8](https://peps.python.org/pep-0008/).  
+> These recommendations are intended to make our shared Python code **readable, maintainable, and bug‑resistant**, helping us deliver faster with fewer surprises. They are based on [Clean Code](https://github.com/jnguyen095/clean-code/blob/master/Clean.Code.A.Handbook.of.Agile.Software.Craftsmanship.pdf) principles and [PEP 8](https://peps.python.org/pep-0008/).  
 >  
 > They are not rigid rules, but following them will make our shared library easier to extend, test, and review.
 
