@@ -12,31 +12,57 @@ Small, focused functions are easier to test, reuse, and maintain. Avoid bundling
 
 ```python
 # Bad
-def process_order(order):
-    validate(order)
-    save_to_database(order)
-    send_confirmation_email(order)
-    update_inventory(order)
+def format_user_profile(user):
+    full_name = f"{user['first']} {user['last']}"
+    username = f"{user['first'][0].lower()}{user['last'].lower()}"
+    return f"{full_name} ({username})"
 
 # Good
-def validate_order(order):
-    ...
+def build_full_name(user):
+    return f"{user['first']} {user['last']}"
 
-def save_order(order):
-    ...
+def generate_username(user):
+    return f"{user['first'][0].lower()}{user['last'].lower()}"
 
-def notify_customer(order):
-    ...
-
-def update_inventory(order):
-    ...
+def format_user_profile(user):
+    return f"{build_full_name(user)} ({generate_username(user)})"
 ```
 
 ---
+## Log Within Shared Functions Sparingly
 
+Shared functions may be used in many different situations, and logging may not always be appropriate or desired. If logging is needed for debugging or tracing, prefer doing it **outside** the shared function, in the calling code.  
+
+
+```python
+# Bad
+def normalize_username(username: str) -> str:
+    normalized = username.strip().lower()
+    print(f"Normalized username: {normalized}")  # Logging not always wanted
+    return normalized
+
+# Good
+def normalize_username(username: str) -> str:
+    return username.strip().lower()
+
+username = normalize_username(" Alice ")
+logger.info(f"Normalized username: {username}")
+```
+Exception: Similar to the standard "Handle Errors Gracefully", log inside a shared function only when you can provide meaningful context that would be hard to attain in the calling code.
+
+```python
+def load_config(path: str) -> dict:
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except FileNotFoundError as e:
+        logger.error(f"Configuration file not found at {path}")
+        raise
+```
+---
 ## Use Meaningful Names
 
-Choose descriptive names for functions, variables, and arguments. Code should explain itself without extra comments.  
+Choose descriptive names for functions, variables, and arguments. Code should explain itself without extra comments. 
 
 ```python
 # Bad
@@ -47,6 +73,7 @@ def calc(x, y):
 def calculate_discount(price: float, percent: float) -> float:
     return price * (1 - percent / 100)
 ```
+Abbreviations used to be necessary to save time and space, but languages like Python compile your code and convert variables and functions into shorter names. With the compiler handling the time and space concerns, the code we write should be descriptive and explicit.
 
 ---
 
@@ -56,11 +83,14 @@ Comments should explain *why*, not *what*. Save explanations for logic that isnâ
 
 ```python
 # Bad
-result = sorted(users, key=lambda u: (u[1], u[0]))
+numbers.sort()
+median = numbers[len(numbers) // 2]
 
 # Good
-# Sort users by last name, then by first name
-result = sorted(users, key=lambda u: (u.last_name, u.first_name))
+
+# Sort numbers first so the middle element can be used as the median
+numbers.sort()
+median = numbers[len(numbers) // 2]
 ```
 
 ---
@@ -77,7 +107,7 @@ if len(password) < 8:
 # Good
 min_password_length = 8
 
-if len(password) < MIN_PASSWORD_LENGTH:
+if len(password) < min_password_length:
     raise ValueError("Password too short")
 ```
 
